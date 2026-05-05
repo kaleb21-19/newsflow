@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:newsflow/core/theme/app_theme.dart';
 import 'package:newsflow/core/utils/app_config.dart';
 
 class App extends StatelessWidget {
@@ -8,6 +9,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: AppConfig.appName,
+      debugShowCheckedModeBanner: AppConfig.isDevelopment,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
       home: Scaffold(
         body: Center(
       child: Text(
