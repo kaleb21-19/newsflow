@@ -21,7 +21,17 @@ class ApiClient {
         },
       ),
     );
-
+_dio.interceptors.add(
+  InterceptorsWrapper(
+    onRequest: (options, handler) {
+      final overrideUrl = options.extra['baseUrl'] as String?;
+      if (overrideUrl != null) {
+        options.baseUrl = overrideUrl;
+      }
+      handler.next(options);
+    },
+  ),
+);
     _dio.interceptors.add(
       ApiInterceptor(
         secureStorage: secureStorage,
@@ -32,59 +42,43 @@ class ApiClient {
     );
   }
 
-  Future<dynamic> get(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-  }) async {
-    try {
-      final response = await _dio.get(
-        path,
-        queryParameters: queryParameters,
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw _handleDioException(e);
-    }
+ Future<dynamic> get(
+  String path, {
+  Map<String, dynamic>? queryParameters,
+  String? baseUrl,
+}) async {
+  try {
+    final response = await _dio.get(
+      path,
+      queryParameters: queryParameters,
+      options: baseUrl != null
+          ? Options(extra: {'baseUrl': baseUrl})
+          : null,
+    );
+    return response.data;
+  } on DioException catch (e) {
+    throw _handleDioException(e);
   }
+}
 
-  Future<dynamic> post(
-    String path, {
-    Map<String, dynamic>? body,
-  }) async {
-    try {
-      final response = await _dio.post(
-        path,
-        data: body,
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw _handleDioException(e);
-    }
+Future<dynamic> post(
+  String path, {
+  Map<String, dynamic>? body,
+  String? baseUrl,
+}) async {
+  try {
+    final response = await _dio.post(
+      path,
+      data: body,
+      options: baseUrl != null
+          ? Options(extra: {'baseUrl': baseUrl})
+          : null,
+    );
+    return response.data;
+  } on DioException catch (e) {
+    throw _handleDioException(e);
   }
-
-  Future<dynamic> put(
-    String path, {
-    Map<String, dynamic>? body,
-  }) async {
-    try {
-      final response = await _dio.put(
-        path,
-        data: body,
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw _handleDioException(e);
-    }
-  }
-
-  Future<dynamic> delete(String path) async {
-    try {
-      final response = await _dio.delete(path);
-      return response.data;
-    } on DioException catch (e) {
-      throw _handleDioException(e);
-    }
-  }
+}
 
   Exception _handleDioException(DioException e) {
     switch (e.type) {

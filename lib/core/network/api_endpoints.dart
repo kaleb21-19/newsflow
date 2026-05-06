@@ -1,12 +1,14 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // Auth
-  static const String login = '/auth/login';
-  static const String register = '/auth/register';
+
   static const String refreshToken = '/auth/refresh';
 
-  // News
+  // Auth — reqres.in
+  static const String login = '/login';
+  static const String register = '/register';
+
+  // News — newsapi.org
   static const String topHeadlines = '/top-headlines';
   static const String everything = '/everything';
   static const String sources = '/top-headlines/sources';

@@ -14,10 +14,13 @@ class AppConfig {
 
   static String get appName =>
       dotenv.env['APP_NAME'] ?? 'NewsFlow';
-
+  
   static String get baseUrl =>
       dotenv.env['BASE_URL'] ?? '';
 
+  static String get authBaseUrl =>
+      dotenv.env['AUTH_BASE_URL'] ?? '';
+  
   static String get apiKey =>
       dotenv.env['API_KEY'] ?? '';
 
