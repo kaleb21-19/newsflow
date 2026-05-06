@@ -7,6 +7,7 @@ class ApiEndpoints {
   // Auth — reqres.in
   static const String login = '/login';
   static const String register = '/register';
+  static String user(String id) => '/user/$id';
 
   // News — newsapi.org
   static const String topHeadlines = '/top-headlines';
