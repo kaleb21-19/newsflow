@@ -42,6 +42,7 @@ dependencies:
 
   # Functional error handling
   dartz: ^0.10.1
+  hive: ^2.2.3
 
 dev_dependencies:
   flutter_test:
