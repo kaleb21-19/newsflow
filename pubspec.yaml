@@ -19,7 +19,7 @@ dependencies:
 
   # Models - code generation
   freezed_annotation: ^3.1.0    # was ^2.4.4
-  json_annotation: ^4.9.0
+  json_annotation: ^4.11.0
 
   # Dependency injection
   get_it: ^7.7.0
