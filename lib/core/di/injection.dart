@@ -10,6 +10,13 @@ import 'package:newsflow/core/network/network_info.dart';
 import 'package:newsflow/core/storage/hive_boxes.dart';
 import 'package:newsflow/core/storage/local_storage.dart';
 import 'package:newsflow/core/storage/secure_storage.dart';
+import 'package:newsflow/features/auth/data/datasources/auth_remote_datasources.dart';
+import 'package:newsflow/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:newsflow/features/auth/domain/repositories/auth_repository.dart';
+import 'package:newsflow/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:newsflow/features/auth/domain/usecases/login_usecase.dart';
+import 'package:newsflow/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:newsflow/features/auth/domain/usecases/register_usecase.dart';
 
 /// Global dependency injection container
 final getIt = GetIt.instance;
@@ -20,7 +27,10 @@ Future<void> setupDependencies() async {
   // Initialize all dependencies here
     await _initHive();
    await _registerCore();
+     _registerAuth();
 }
+
+
 //
 Future<void> _initHive() async {
   // Initialize Hive with Flutter path
@@ -33,7 +43,7 @@ Future<void> _initHive() async {
   await Hive.openBox(HiveBoxes.articles);
   await Hive.openBox(HiveBoxes.savedArticles);
   await Hive.openBox(HiveBoxes.user);
-;
+
 }
 
 
@@ -58,4 +68,41 @@ Future<void> _registerCore() async {
   getIt.registerLazySingleton<ApiClient>(() => ApiClient(secureStorage: getIt<SecureStorage>()));
 }
 
+void _registerAuth() {
+  // ─── Datasource ───────────────────────────────────
+  getIt.registerLazySingleton<AuthRemoteDatasource>(
+    () => AuthRemoteDatasourceImpl(
+      apiClient: getIt<ApiClient>(),
+    ),
+  );
+
+  // ─── Repository ───────────────────────────────────
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(
+      remoteDatasource: getIt<AuthRemoteDatasource>(),
+      secureStorage: getIt<SecureStorage>(),
+      localStorage: getIt<LocalStorage>(),
+      networkInfo: getIt<NetworkInfo>(),
+    ),
+  );
+
+  // ─── Use Cases ────────────────────────────────────
+  getIt.registerLazySingleton<LoginUsecase>(
+    () => LoginUsecase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<RegisterUseCase>(
+    () => RegisterUseCase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<LogoutUseCase>(
+    () => LogoutUseCase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetCurrentUserUseCase>(
+    () => GetCurrentUserUseCase(getIt<AuthRepository>()),
+  );
+
+
+}
 
