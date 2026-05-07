@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -5,7 +7,6 @@ import 'package:newsflow/features/auth/presentation/pages/login_page.dart';
 import 'package:newsflow/features/auth/presentation/pages/register_page.dart';
 import 'package:newsflow/features/auth/presentation/pages/splash_page.dart';
 import 'package:newsflow/features/home/presentation/pages/home_page.dart';
-
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import 'route_names.dart';
 
@@ -19,47 +20,40 @@ class AppRouter {
       
       // Rebuilds router when auth state changes
       refreshListenable: _AuthChangeNotifier(authBloc),
+redirect: (context, state) {
+  final authState = authBloc.state;
+  final location = state.matchedLocation;
 
-      // Runs before every navigation
-      redirect: (context, state) {
-        final authState = authBloc.state;
-        final location = state.matchedLocation;
+  print('Redirect fired — status: ${authState.status}, location: $location');
 
-        // Still checking auth — stay on splash
-        final isInitialOrLoading =
-            authState.status == AuthStatus.initial ||
-            authState.status == AuthStatus.loading;
+  // Still checking
+  final isInitialOrLoading =
+      authState.status == AuthStatus.initial ||
+      authState.status == AuthStatus.loading;
 
-        if (isInitialOrLoading) {
-          return RouteNames.splash;
-        }
+  if (isInitialOrLoading) return RouteNames.splash;
 
-        // User is authenticated
-        final isAuthenticated =
-            authState.status == AuthStatus.authenticated;
+  final isAuthenticated =
+      authState.status == AuthStatus.authenticated;
 
-        // Auth pages — login and register
-        final isOnAuthPage =
-            location == RouteNames.login ||
-            location == RouteNames.register ||
-            location == RouteNames.splash;
+  final isOnAuthPage =
+      location == RouteNames.login ||
+      location == RouteNames.register ||
+      location == RouteNames.splash;
 
-        // Authenticated user trying to access auth pages
-        // Send them to home
-        if (isAuthenticated && isOnAuthPage) {
-          return RouteNames.home;
-        }
+  // Logged in on auth page — go home
+  if (isAuthenticated && isOnAuthPage) return RouteNames.home;
 
-        // Unauthenticated user trying to access protected pages
-        // Send them to login
-        if (!isAuthenticated && !isOnAuthPage) {
-          return RouteNames.login;
-        }
+  // Not logged in on splash — go to login
+  if (!isAuthenticated && location == RouteNames.splash) {
+    return RouteNames.login;
+  }
 
-        // No redirect needed
-        return null;
-      },
+  // Not logged in on protected page — go to login
+  if (!isAuthenticated && !isOnAuthPage) return RouteNames.login;
 
+  return null;
+},
       routes: [
         GoRoute(
           path: RouteNames.splash,
@@ -92,13 +86,18 @@ class AppRouter {
 /// go_router listens to this and re-runs redirect
 class _AuthChangeNotifier extends ChangeNotifier {
   final AuthBloc _authBloc;
+  late final StreamSubscription<AuthState> _subscription;
 
   _AuthChangeNotifier(this._authBloc) {
-    // Listen to AuthBloc stream
-    _authBloc.stream.listen((_) {
-      // Every time auth state changes
-      // notify go_router to re-evaluate redirect
+    _subscription = _authBloc.stream.listen((_) {
       notifyListeners();
     });
   }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
 }

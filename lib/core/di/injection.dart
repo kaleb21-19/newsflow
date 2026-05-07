@@ -104,6 +104,7 @@ void _registerAuth() {
     () => GetCurrentUserUseCase(getIt<AuthRepository>()),
   );
 
+
 getIt.registerFactory<AuthBloc>(
     () => AuthBloc(
       loginUseCase: getIt<LoginUsecase>(),
@@ -114,4 +115,5 @@ getIt.registerFactory<AuthBloc>(
   );
 
 }
+
 

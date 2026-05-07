@@ -7,36 +7,41 @@ import 'package:newsflow/core/theme/app_theme.dart';
 import 'package:newsflow/core/utils/app_config.dart';
 import 'package:newsflow/features/auth/presentation/bloc/auth_bloc.dart';
 
+
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AuthBloc>(
+      // Create AuthBloc at the top of the app
+      // Available to every widget including the router
       create: (_) => getIt<AuthBloc>(),
-      child: const _AppView(),
+      child: _AppView(),
     );
   }
 }
+
 class _AppView extends StatefulWidget {
   const _AppView();
 
   @override
-  State<_AppView> createState() => __AppViewState();
+  State<_AppView> createState() => _AppViewState();
 }
 
-class __AppViewState extends State<_AppView> {
+class _AppViewState extends State<_AppView> {
   late final GoRouter _router;
 
   @override
   void initState() {
     super.initState();
-    _router = AppRouter.router(getIt<AuthBloc>());
+    // Create router with AuthBloc
+    _router = AppRouter.router(context.read<AuthBloc>());
   }
 
   @override
   Widget build(BuildContext context) {
-       return MaterialApp.router(
+    return MaterialApp.router(
       title: AppConfig.appName,
       debugShowCheckedModeBanner: AppConfig.isDevelopment,
       theme: AppTheme.light,
