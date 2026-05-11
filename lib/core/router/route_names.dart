@@ -7,8 +7,9 @@ class RouteNames {
   static const String login = '/login';
   static const String register = '/register';
   static const String home = '/home';
-  static const String articleDetail = '/article/:id';
+  //static const String articleDetail = '/article/:id';
 
   // Helper for article detail with actual id
-  static String article(String id) => '/article/$id';
+  //static String article(String id) => '/article/$id';
+  static const String articleDetail = '/article';
 }

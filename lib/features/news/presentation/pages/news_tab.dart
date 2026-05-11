@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:newsflow/core/di/injection.dart';
+import 'package:newsflow/core/router/route_names.dart';
 import 'package:newsflow/core/theme/app_colors.dart';
 import 'package:newsflow/core/theme/app_spacing.dart';
 import 'package:newsflow/features/news/domain/entities/article_entity.dart';
@@ -133,7 +135,9 @@ Expanded(child: RefreshIndicator(
   builderDelegate: PagedChildBuilderDelegate(
   itemBuilder: (context,item,index){
   return Padding(padding:EdgeInsets.only(bottom: AppSpacing.md),
-  child: ArticleCard(article: item, onTap: () {  },));
+  child: ArticleCard(article: item, onTap: () { 
+    context.go(RouteNames.articleDetail, extra: item);
+   },));
                     },
   firstPageProgressIndicatorBuilder: (context)=>const Center(child: CircularProgressIndicator()),
   newPageProgressIndicatorBuilder: (context)=>const Center(child: CircularProgressIndicator()),

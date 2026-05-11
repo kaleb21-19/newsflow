@@ -7,6 +7,8 @@ import 'package:newsflow/features/auth/presentation/pages/login_page.dart';
 import 'package:newsflow/features/auth/presentation/pages/register_page.dart';
 import 'package:newsflow/features/auth/presentation/pages/splash_page.dart';
 import 'package:newsflow/features/home/presentation/pages/home_page.dart';
+import 'package:newsflow/features/news/domain/entities/article_entity.dart';
+import 'package:newsflow/features/news/presentation/pages/article_detail_page.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import 'route_names.dart';
 
@@ -75,6 +77,14 @@ redirect: (context, state) {
           name: 'home',
           builder: (context, state) => const HomePage(),
         ),
+        GoRoute(
+  path: RouteNames.articleDetail,
+  name: 'articleDetail',
+  builder: (context, state) {
+    final article = state.extra as ArticleEntity;
+    return ArticleDetailPage(article: article);
+  },
+),
       ],
     );
   }
