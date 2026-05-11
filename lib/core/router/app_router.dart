@@ -90,6 +90,7 @@ class _AuthChangeNotifier extends ChangeNotifier {
 
   _AuthChangeNotifier(this._authBloc) {
     _subscription = _authBloc.stream.listen((_) {
+      print('AUTH CHANGED — notifying router');
       notifyListeners();
     });
   }

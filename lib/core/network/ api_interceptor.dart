@@ -52,7 +52,7 @@ Future<void> onError(
   }
 
   if(err.response?.statusCode == 401) {
-    // TODO: Handle 401 error - maybe refresh token or logout
+    // TODO(developer): Handle 401 error - maybe refresh token or logout
 
    final refreshed = await _tryRefreshToken();
    if(refreshed) {

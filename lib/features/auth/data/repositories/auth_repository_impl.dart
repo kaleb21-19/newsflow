@@ -36,23 +36,24 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
+       print('Attempting login with email: $email');
       final userModel = await _remoteDatasource.login(
         email: email,
         password: password,
       );
-
+      print('Login success: ${userModel.email}');
       await _secureStorage.saveAccessToken(userModel.token);
       await _secureStorage.saveUserId(userModel.id);
       await _localStorage.saveUser(userModel.toMap());
 
       return Right(userModel.toEntity());
-    } on NetworkException {
-      return const Left(NetworkFailure('No internet connection'));
     } on AuthException {
-      return const Left(AuthFailure('Invalid credentials'));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    }
+    print('Auth exception caught');
+    return const Left(AuthFailure('Invalid credentials'));
+  } on ServerException catch (e) {
+    print('Server exception: ${e.message} status: ${e.statusCode}');
+    return Left(ServerFailure(e.message));
+  }
   }
 
   @override

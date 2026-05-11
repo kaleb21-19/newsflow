@@ -10,7 +10,9 @@ import 'package:newsflow/core/network/network_info.dart';
 import 'package:newsflow/core/storage/hive_boxes.dart';
 import 'package:newsflow/core/storage/local_storage.dart';
 import 'package:newsflow/core/storage/secure_storage.dart';
+import 'package:newsflow/core/utils/app_config.dart';
 import 'package:newsflow/features/auth/data/datasources/auth_remote_datasources.dart';
+import 'package:newsflow/features/auth/data/datasources/mock_auth_datasource.dart';
 import 'package:newsflow/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:newsflow/features/auth/domain/repositories/auth_repository.dart';
 import 'package:newsflow/features/auth/domain/usecases/get_current_user_usecase.dart';
@@ -18,6 +20,13 @@ import 'package:newsflow/features/auth/domain/usecases/login_usecase.dart';
 import 'package:newsflow/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:newsflow/features/auth/domain/usecases/register_usecase.dart';
 import 'package:newsflow/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:newsflow/features/news/data/datasources/mock_news_datasource.dart';
+import 'package:newsflow/features/news/data/datasources/news_remote_datasource.dart';
+import 'package:newsflow/features/news/data/repositories/news_repository_impl.dart';
+import 'package:newsflow/features/news/domain/repositories/news_repository.dart';
+import 'package:newsflow/features/news/domain/usecases/get_catched_articles_usecase.dart';
+import 'package:newsflow/features/news/domain/usecases/get_top_headlines_usecase.dart';
+import 'package:newsflow/features/news/presentation/bloc/news_bloc.dart';
 
 /// Global dependency injection container
 final getIt = GetIt.instance;
@@ -29,6 +38,7 @@ Future<void> setupDependencies() async {
     await _initHive();
    await _registerCore();
      _registerAuth();
+     _registerNews();
 }
 
 
@@ -68,13 +78,15 @@ Future<void> _registerCore() async {
 
   getIt.registerLazySingleton<ApiClient>(() => ApiClient(secureStorage: getIt<SecureStorage>()));
 }
-
 void _registerAuth() {
   // ─── Datasource ───────────────────────────────────
+  // Use mock in development, real in production
   getIt.registerLazySingleton<AuthRemoteDatasource>(
-    () => AuthRemoteDatasourceImpl(
-      apiClient: getIt<ApiClient>(),
-    ),
+    () => AppConfig.isDevelopment
+        ? MockAuthDatasource()
+        : AuthRemoteDatasourceImpl(
+            apiClient: getIt<ApiClient>(),
+          ),
   );
 
   // ─── Repository ───────────────────────────────────
@@ -104,8 +116,7 @@ void _registerAuth() {
     () => GetCurrentUserUseCase(getIt<AuthRepository>()),
   );
 
-
-getIt.registerFactory<AuthBloc>(
+  getIt.registerFactory<AuthBloc>(
     () => AuthBloc(
       loginUseCase: getIt<LoginUsecase>(),
       registerUseCase: getIt<RegisterUseCase>(),
@@ -113,7 +124,40 @@ getIt.registerFactory<AuthBloc>(
       getCurrentUserUseCase: getIt<GetCurrentUserUseCase>(),
     ),
   );
-
 }
+void _registerNews() {
+  // ─── Datasource ───────────────────────────────────
+  getIt.registerLazySingleton<NewsRemoteDataSource>(
+    () => AppConfig.isDevelopment
+        ? MockNewsDatasourceImpl()
+        : NewsRemoteDataSourceImpl(
+            apiClient: getIt<ApiClient>(),
+          ),
+  );
 
+  // ─── Repository ───────────────────────────────────
+  getIt.registerLazySingleton<NewsRepository>(
+    () => NewsRepositoryImpl(
+      remoteDatasource: getIt<NewsRemoteDataSource>(),
+      localStorage: getIt<LocalStorage>(),
+      networkInfo: getIt<NetworkInfo>(),
+    ),
+  );
 
+  // ─── Use Cases ────────────────────────────────────
+  getIt.registerLazySingleton<GetTopHeadlinesUseCase>(
+    () => GetTopHeadlinesUseCase(getIt<NewsRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetCachedArticlesUseCase>(
+    () => GetCachedArticlesUseCase(getIt<NewsRepository>()),
+  );
+
+  // ─── BLoC ─────────────────────────────────────────
+  getIt.registerFactory<NewsBloc>(
+    () => NewsBloc(
+      getTopHeadlinesUseCase: getIt<GetTopHeadlinesUseCase>(),
+      getCachedArticlesUseCase: getIt<GetCachedArticlesUseCase>(),
+    ),
+  );
+}
