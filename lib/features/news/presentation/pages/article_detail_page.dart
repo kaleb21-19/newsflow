@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:newsflow/core/theme/app_colors.dart';
 import 'package:newsflow/core/theme/app_spacing.dart';
 import 'package:newsflow/core/theme/app_text_styles.dart';
 import 'package:newsflow/features/news/domain/entities/article_entity.dart';
+import 'package:newsflow/features/saved/presentation/bloc/saved_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ArticleDetailPage extends StatelessWidget {
@@ -15,15 +18,34 @@ class ArticleDetailPage extends StatelessWidget {
     return Scaffold(
    appBar: AppBar(
   title: const Text(''),
+  leading: IconButton(
+    icon: const Icon(Icons.arrow_back),
+    onPressed: () => context.pop(),
+  ),
   actions: [
-    IconButton(
-      icon: Icon(
-        article.isBookmarked
-            ? Icons.bookmark
-            : Icons.bookmark_outline,
-      ),
-      onPressed: () => print('bookmark tapped'),
-    ),
+    
+       BlocBuilder<SavedBloc, SavedState>(
+        buildWhen: (previous, current) {
+           return previous.articles!=current.articles;
+        },
+        builder: (context, state) {
+          final isSaved=state.articles.any((a) => a.id == article.id);
+          return IconButton(
+            icon: Icon(
+              isSaved
+                  ? Icons.bookmark
+                  : Icons.bookmark_outline,
+            ),
+            onPressed: () {
+              if(isSaved){
+                context.read<SavedBloc>().add(RemoveSavedArticle(articleId: article.id));
+              }else{
+               context.read<SavedBloc>().add(SavedArticle(article: article));
+              }
+            },
+          );
+        })
+    
   ],
 ),
       

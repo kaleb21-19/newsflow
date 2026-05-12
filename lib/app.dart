@@ -6,6 +6,7 @@ import 'package:newsflow/core/router/app_router.dart';
 import 'package:newsflow/core/theme/app_theme.dart';
 import 'package:newsflow/core/utils/app_config.dart';
 import 'package:newsflow/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:newsflow/features/saved/presentation/bloc/saved_bloc.dart';
 
 
 class App extends StatelessWidget {
@@ -13,10 +14,18 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>(
-      // Create AuthBloc at the top of the app
-      // Available to every widget including the router
-      create: (_) => getIt<AuthBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+      
+          // Create AuthBloc at the top of the app
+          // Available to every widget including the router
+          create: (_) => getIt<AuthBloc>(),
+        ),
+        BlocProvider<SavedBloc>(
+          create: (context) => getIt<SavedBloc>()..add(const LoadSavedArticles()),
+        ),
+      ],
       child: _AppView(),
     );
   }
@@ -43,7 +52,7 @@ class _AppViewState extends State<_AppView> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: AppConfig.appName,
-      debugShowCheckedModeBanner: AppConfig.isDevelopment,
+      debugShowCheckedModeBanner: AppConfig.isProduction,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,

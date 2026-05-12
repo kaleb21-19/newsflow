@@ -52,6 +52,21 @@ ArticleEntity copyWith({
   );
 }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'description': description,
+      'content': content,
+      'url': url,
+      'imageUrl': imageUrl,
+      'source': source,
+      'author': author,
+      'publishedAt': publishedAt.toIso8601String(),
+      'isBookmarked': isBookmarked,
+    };
+  }
+
+
   @override
   List<Object?> get props => [id, title, description, content, url, imageUrl, source, author, publishedAt, isBookmarked];
 }

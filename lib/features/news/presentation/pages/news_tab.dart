@@ -136,7 +136,7 @@ Expanded(child: RefreshIndicator(
   itemBuilder: (context,item,index){
   return Padding(padding:EdgeInsets.only(bottom: AppSpacing.md),
   child: ArticleCard(article: item, onTap: () { 
-    context.go(RouteNames.articleDetail, extra: item);
+    context.push(RouteNames.articleDetail, extra: item);
    },));
                     },
   firstPageProgressIndicatorBuilder: (context)=>const Center(child: CircularProgressIndicator()),

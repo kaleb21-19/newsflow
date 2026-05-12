@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newsflow/core/di/injection.dart';
 import 'package:newsflow/core/theme/app_text_styles.dart';
 import 'package:newsflow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsflow/features/news/presentation/pages/news_tab.dart';
+import 'package:newsflow/features/saved/presentation/bloc/saved_bloc.dart';
+import 'package:newsflow/features/saved/presentation/pages/saved_tab.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
@@ -56,25 +59,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-// ─── News Tab ─────────────────────────────────────────────
-
-// ─── Saved Tab ────────────────────────────────────────────
-
-class SavedTab extends StatelessWidget {
-  const SavedTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Saved'),
-      ),
-      body: const Center(
-        child: Text('Saved articles coming soon'),
-      ),
-    );
-  }
-}
 
 // ─── Profile Tab ──────────────────────────────────────────
 
@@ -83,7 +67,8 @@ class ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return 
+       Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
       ),
@@ -153,6 +138,7 @@ class ProfileTab extends StatelessWidget {
           );
         },
       ),
+      
     );
   }
 }

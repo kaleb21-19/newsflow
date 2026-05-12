@@ -27,6 +27,12 @@ import 'package:newsflow/features/news/domain/repositories/news_repository.dart'
 import 'package:newsflow/features/news/domain/usecases/get_catched_articles_usecase.dart';
 import 'package:newsflow/features/news/domain/usecases/get_top_headlines_usecase.dart';
 import 'package:newsflow/features/news/presentation/bloc/news_bloc.dart';
+import 'package:newsflow/features/saved/data/repositories/%20saved_repository_impl.dart';
+import 'package:newsflow/features/saved/domain/repositories/saved_repository.dart';
+import 'package:newsflow/features/saved/domain/usecases/get_saved_articles_usecase.dart';
+import 'package:newsflow/features/saved/domain/usecases/remove_article_usecase.dart';
+import 'package:newsflow/features/saved/domain/usecases/save_article_usecase.dart';
+import 'package:newsflow/features/saved/presentation/bloc/saved_bloc.dart';
 
 /// Global dependency injection container
 final getIt = GetIt.instance;
@@ -39,6 +45,7 @@ Future<void> setupDependencies() async {
    await _registerCore();
      _registerAuth();
      _registerNews();
+     _registerSaved();
 }
 
 
@@ -160,4 +167,28 @@ void _registerNews() {
       getCachedArticlesUseCase: getIt<GetCachedArticlesUseCase>(),
     ),
   );
+}
+
+void _registerSaved(){
+     
+     getIt.registerLazySingleton<SavedRepository>(()=>SavedRepositoryImpl(
+      localStorage: getIt<LocalStorage>(),
+      ));
+
+      getIt.registerLazySingleton<GetSavedArticlesUsecase>(
+        () => GetSavedArticlesUsecase(getIt<SavedRepository>()),
+      );
+      getIt.registerLazySingleton<SaveArticleUsecase>(
+        () => SaveArticleUsecase(getIt<SavedRepository>()),
+      );
+      getIt.registerLazySingleton<RemoveArticleUsecase>(
+        () => RemoveArticleUsecase(getIt<SavedRepository>()),
+      );
+
+      getIt.registerFactory<SavedBloc>(()=>SavedBloc(
+        getSavedArticlesUseCase: getIt<GetSavedArticlesUsecase>(),
+        saveArticleUsecase: getIt<SaveArticleUsecase>(),
+        removeSavedArticle: getIt<RemoveArticleUsecase>(),
+      ));
+
 }
