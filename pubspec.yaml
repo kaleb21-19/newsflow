@@ -1,0 +1,72 @@
+name: newsflow
+description: A production-ready news reader app.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.11.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+
+  # Network
+  dio: ^5.7.0
+
+  # Models - code generation
+  freezed_annotation: ^3.1.0    # was ^2.4.4
+  json_annotation: ^4.11.0
+
+  # Dependency injection
+  get_it: ^7.7.0
+  injectable: ^2.4.4
+
+  # Local storage
+  hive_flutter: ^1.1.0
+
+  # Secure storage
+  flutter_secure_storage: ^9.2.2
+
+  # Navigation
+  go_router: ^14.3.0
+
+  # Connectivity
+  connectivity_plus: ^6.1.0
+
+  # Environment variables
+  flutter_dotenv: ^5.2.1
+
+  # Functional error handling
+  dartz: ^0.10.1
+  hive: ^2.2.3
+  bloc_concurrency: ^0.2.5
+  timeago: ^3.7.1
+  skeletonizer: ^2.1.3
+  infinite_scroll_pagination: ^5.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code generation
+  build_runner: ^2.4.13
+  freezed: ^3.1.0               # was ^3.0.0
+  json_serializable: ^6.8.0
+  injectable_generator: ^2.6.2
+
+  # Testing
+  bloc_test: ^9.1.7
+  mocktail: ^1.0.4
+
+  # Linting
+  very_good_analysis: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env.development
+    - .env.production
